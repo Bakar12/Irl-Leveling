@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TaskItem from '../components/TaskItem';
+import ProgressBar from '@react-native-community/progress-bar-android';
 
 type Task = {
   name: string;
@@ -54,6 +55,16 @@ const HomeScreen: React.FC = () => {
       </Text>
 
       <Text style={styles.xpDisplay}>Current XP: {xp}</Text>
+      <View style={styles.progressContainer}>
+        <Text style={styles.levelText}>Level: {Math.floor(xp / 50) + 1}</Text>
+        <ProgressBar
+          styleAttr="Horizontal"
+          indeterminate={false}
+          progress={(xp % 50) / 50}
+          color="#4CAF50"
+        />
+      </View>
+
 
       <FlatList
         data={tasks}
@@ -90,6 +101,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#4CAF50',
   },
+  progressContainer: {
+  marginVertical: 20,
+  paddingHorizontal: 10,
+},
+levelText: {
+  fontSize: 16,
+  fontWeight: '500',
+  marginBottom: 5,
+  textAlign: 'center',
+},
+
 });
 
 export default HomeScreen;
