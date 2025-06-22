@@ -33,19 +33,36 @@ const HomeScreen: React.FC = () => {
     loadName();
   }, []);
 
-  const toggleTask = (index: number) => {
+  const toggleTask = async (index: number) => {
     const updatedTasks = [...tasks];
     const task = updatedTasks[index];
 
-    // Toggling completion
     task.completed = !task.completed;
 
-    // Adjust XP
     const xpChange = task.completed ? task.xp : -task.xp;
-    setXp((prevXp) => Math.max(prevXp + xpChange, 0)); // don't go below 0
+    const newXp = Math.max(xp + xpChange, 0);
 
     setTasks(updatedTasks);
+    setXp(newXp);
+
+    await AsyncStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    await AsyncStorage.setItem('xp', newXp.toString());
   };
+  useEffect(() => {
+  const loadData = async () => {
+    const storedName = await AsyncStorage.getItem('heroName');
+    const storedXP = await AsyncStorage.getItem('xp');
+    const storedTasks = await AsyncStorage.getItem('tasks');
+
+    if (storedName) setName(storedName);
+    if (storedXP) setXp(parseInt(storedXP));
+    if (storedTasks) setTasks(JSON.parse(storedTasks));
+  };
+
+  loadData();
+}, []);
+
+
 
   return (
     <View style={styles.container}>
