@@ -22,6 +22,7 @@ const initialTasks: Task[] = [
 const HomeScreen: React.FC = () => {
   const [name, setName] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [xp, setXp] = useState<number>(0);
 
   useEffect(() => {
     const loadName = async () => {
@@ -33,9 +34,17 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   const toggleTask = (index: number) => {
-    const updated = [...tasks];
-    updated[index].completed = !updated[index].completed;
-    setTasks(updated);
+    const updatedTasks = [...tasks];
+    const task = updatedTasks[index];
+
+    // Toggling completion
+    task.completed = !task.completed;
+
+    // Adjust XP
+    const xpChange = task.completed ? task.xp : -task.xp;
+    setXp((prevXp) => Math.max(prevXp + xpChange, 0)); // don't go below 0
+
+    setTasks(updatedTasks);
   };
 
   return (
@@ -43,6 +52,8 @@ const HomeScreen: React.FC = () => {
       <Text style={styles.greeting}>
         {name ? `Welcome back, ${name}!` : 'Loading...'}
       </Text>
+
+      <Text style={styles.xpDisplay}>Current XP: {xp}</Text>
 
       <FlatList
         data={tasks}
@@ -69,10 +80,18 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 22,
     fontWeight: '600',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  xpDisplay: {
+    fontSize: 18,
+    fontWeight: '500',
     marginBottom: 20,
     textAlign: 'center',
+    color: '#4CAF50',
   },
 });
 
 export default HomeScreen;
+
 
