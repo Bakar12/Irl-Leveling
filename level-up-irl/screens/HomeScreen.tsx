@@ -25,12 +25,26 @@ const HomeScreen: React.FC = () => {
   const [xp, setXp] = useState<number>(0);
 
   useEffect(() => {
-    const loadName = async () => {
-      const storedName = await AsyncStorage.getItem('heroName');
-      setName(storedName);
+    const loadData = async () => {
+      try {
+        const storedName = await AsyncStorage.getItem('heroName');
+        const storedXP = await AsyncStorage.getItem('xp');
+        const storedTasks = await AsyncStorage.getItem('tasks');
+
+        if (storedName) setName(storedName);
+        if (storedXP) setXp(parseInt(storedXP));
+        if (storedTasks) {
+          const parsedTasks = JSON.parse(storedTasks);
+          if (Array.isArray(parsedTasks)) {
+            setTasks(parsedTasks);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading data from AsyncStorage:', error);
+      }
     };
 
-    loadName();
+    loadData();
   }, []);
 
   const toggleTask = async (index: number) => {
@@ -45,24 +59,13 @@ const HomeScreen: React.FC = () => {
     setTasks(updatedTasks);
     setXp(newXp);
 
-    await AsyncStorage.setItem('tasks', JSON.stringify(updatedTasks));
-    await AsyncStorage.setItem('xp', newXp.toString());
+    try {
+      await AsyncStorage.setItem('tasks', JSON.stringify(updatedTasks));
+      await AsyncStorage.setItem('xp', newXp.toString());
+    } catch (error) {
+      console.error('Error saving data to AsyncStorage:', error);
+    }
   };
-  useEffect(() => {
-  const loadData = async () => {
-    const storedName = await AsyncStorage.getItem('heroName');
-    const storedXP = await AsyncStorage.getItem('xp');
-    const storedTasks = await AsyncStorage.getItem('tasks');
-
-    if (storedName) setName(storedName);
-    if (storedXP) setXp(parseInt(storedXP));
-    if (storedTasks) setTasks(JSON.parse(storedTasks));
-  };
-
-  loadData();
-}, []);
-
-
 
   return (
     <View style={styles.container}>
