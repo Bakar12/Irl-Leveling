@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDarkMode } from '../context/DarkModeContext';
+import { darkTheme, lightTheme } from '../utils/theme';
 
 const StreaksScreen: React.FC = () => {
   const [streak, setStreak] = useState(0);
   const [lastDate, setLastDate] = useState('');
+  const { isDarkMode } = useDarkMode();
 
   useEffect(() => {
     const checkStreak = async () => {
@@ -42,6 +45,9 @@ const StreaksScreen: React.FC = () => {
     checkStreak();
   }, []);
 
+  const theme = isDarkMode ? darkTheme : lightTheme;
+  const styles = getStyles(theme);
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>🔥 Your Streak</Text>
@@ -51,27 +57,30 @@ const StreaksScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  text: {
-    fontSize: 18,
-    color: '#4CAF50',
-    marginBottom: 4,
-  },
-  subtext: {
-    fontSize: 14,
-    color: '#777',
-  },
-});
+const getStyles = (theme: typeof lightTheme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+      backgroundColor: theme.background,
+    },
+    heading: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 10,
+      color: theme.text,
+    },
+    text: {
+      fontSize: 18,
+      color: theme.accent,
+      marginBottom: 4,
+    },
+    subtext: {
+      fontSize: 14,
+      color: theme.text,
+    },
+  });
 
 export default StreaksScreen;

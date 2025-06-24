@@ -1,31 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Switch, TextInput, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDarkMode } from '../context/DarkModeContext';
+import { darkTheme, lightTheme } from '../utils/theme';
 
 const ProfileScreen: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [name, setName] = useState('');
 
   useEffect(() => {
     const loadSettings = async () => {
-      const storedDark = await AsyncStorage.getItem('darkMode');
       const storedName = await AsyncStorage.getItem('heroName');
-      if (storedDark !== null) setDarkMode(storedDark === 'true');
       if (storedName) setName(storedName);
     };
     loadSettings();
   }, []);
 
-  const toggleDarkMode = async () => {
-    const newValue = !darkMode;
-    setDarkMode(newValue);
-    await AsyncStorage.setItem('darkMode', newValue.toString());
-  };
-
   const saveName = async () => {
     await AsyncStorage.setItem('heroName', name);
     Alert.alert('Saved', 'Your hero name has been updated!');
   };
+
+  const theme = isDarkMode ? darkTheme : lightTheme;
+  const styles = getStyles(theme);
 
   return (
     <View style={styles.container}>
@@ -33,7 +30,7 @@ const ProfileScreen: React.FC = () => {
 
       <View style={styles.settingRow}>
         <Text style={styles.label}>Dark Mode</Text>
-        <Switch value={darkMode} onValueChange={toggleDarkMode} />
+        <Switch value={isDarkMode} onValueChange={toggleDarkMode} />
       </View>
 
       <View style={styles.settingRowColumn}>
@@ -50,37 +47,42 @@ const ProfileScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  settingRowColumn: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 18,
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 16,
-  },
-});
+const getStyles = (theme: typeof lightTheme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 20,
+      backgroundColor: theme.background,
+    },
+    heading: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 20,
+      textAlign: 'center',
+      color: theme.text,
+    },
+    settingRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    settingRowColumn: {
+      marginBottom: 20,
+    },
+    label: {
+      fontSize: 18,
+      marginBottom: 8,
+      color: theme.text,
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: theme.border,
+      borderRadius: 8,
+      padding: 10,
+      fontSize: 16,
+      color: theme.text,
+    },
+  });
 
 export default ProfileScreen;
