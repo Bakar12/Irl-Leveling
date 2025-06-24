@@ -3,10 +3,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DarkModeProvider } from './context/DarkModeContext';
 
 import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
 import StreaksScreen from './screens/StreaksScreen';
+import ProfileScreen from './screens/ProfileScreen';
 import { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -14,29 +16,39 @@ const Tab = createBottomTabNavigator();
 
 const MainTabs = () => {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: '#4CAF50',
-        tabBarInactiveTintColor: 'gray',
-      }}
-    >
-      <Tab.Screen 
-        name="Home" 
-        component={HomeScreen}
-        options={{
-          tabBarLabel: 'Home',
-          headerShown: false,
+    <DarkModeProvider>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: '#4CAF50',
+          tabBarInactiveTintColor: 'gray',
         }}
-      />
-      <Tab.Screen 
-        name="Streaks" 
-        component={StreaksScreen}
-        options={{
-          tabBarLabel: 'Streaks',
-          headerShown: false,
-        }}
-      />
-    </Tab.Navigator>
+      >
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarLabel: 'Home',
+            headerShown: false,
+          }}
+        />
+        <Tab.Screen 
+          name="Streaks" 
+          component={StreaksScreen}
+          options={{
+            tabBarLabel: 'Streaks',
+            headerShown: false,
+          }}
+        />
+        <Tab.Screen 
+          name="Profile" 
+          component={ProfileScreen}
+          options={{
+            tabBarLabel: 'Profile',
+            headerShown: false,
+          }}
+        />
+      </Tab.Navigator>
+    </DarkModeProvider>
   );
 };
 
